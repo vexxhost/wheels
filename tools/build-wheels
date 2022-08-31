@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -xe
 
 # NOTE(mnaser): This is not meant to be run directly, this is meant to run
 #               inside of the Docker container.
@@ -19,4 +19,8 @@ else
   exit 1
 fi
 
-pip wheel -r /build/requirements.txt -w ${WHEELS_DIR}
+for p in $(cat /build/requirements.txt); do
+  pip wheel -w ${WHEELS_DIR}/$(echo ${p} | cut -d'=' -f1) ${p}
+done
+
+/build/tools/wheel-index ${WHEELS_DIR}
