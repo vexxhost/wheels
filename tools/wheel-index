@@ -1,35 +1,52 @@
 #!/bin/sh -e
 
-WHEELS_DIR=$1
+PLATFORMS=$(find . -type d -mindepth 1 -maxdepth 1 -not -path "./.*" -not -path "./tools")
 
 # Create folder
-mkdir -p public
+mkdir -p public/
 
 # Headers
 echo "<!DOCTYPE html>" > public/index.html
 echo "<html>" >> public/index.html
 echo "  <body>" >> public/index.html
 
-# Loop over all the packages
-for d in $(find ${WHEELS_DIR} -type d -mindepth 1 -maxdepth 1); do
-  # Generate folder for package
-  mkdir -p public/$(basename ${d})
+for platform in $(find . -type d -mindepth 1 -maxdepth 1 -not -path "./.*" -not -path "./tools" -not -path "./public"); do
+  # Create folder
+  mkdir -p public/${platform}/
 
-  # Generate index for the package
-  echo "<!DOCTYPE html>" > public/$(basename ${d})/index.html
-  echo "<html>" >> public/$(basename ${d})/index.html
-  echo "  <body>" >> public/$(basename ${d})/index.html
+  # Headers
+  echo "<!DOCTYPE html>" > public/${platform}/index.html
+  echo "<html>" >> public/${platform}/index.html
+  echo "  <body>" >> public/${platform}/index.html
 
-  # Loop over all the wheels
-  for w in $(find ${d} -type f -name "*.whl"); do
-    echo "    <a href=\"https://github.com/vexxhost/wheels/raw/main/${WHEELS_DIR}/$(basename ${d})/$(basename ${w})\">$(basename ${w})</a>" >> public/$(basename ${d})/index.html
+  # Loop over all the packages
+  for d in $(find ${platform} -type d -mindepth 1 -maxdepth 1); do
+    # Generate folder for package
+    mkdir -p public/${platform}/$(basename ${d})
+
+    # Generate index for the package
+    echo "<!DOCTYPE html>" > public/${platform}/$(basename ${d})/index.html
+    echo "<html>" >> public/${platform}/$(basename ${d})/index.html
+    echo "  <body>" >> public/${platform}/$(basename ${d})/index.html
+
+    # Loop over all the wheels
+    for w in $(find ${d} -type f -name "*.whl"); do
+      echo "    <a href=\"https://github.com/vexxhost/wheels/raw/main/${platform}/$(basename ${d})/$(basename ${w})\">$(basename ${w})</a>" >> public/${platform}/$(basename ${d})/index.html
+    done
+
+    # End the page
+    echo "  </body>" >> public/${platform}/$(basename ${d})/index.html
+    echo "</html>" >> public/${platform}/$(basename ${d})/index.html
+
+    echo "    <a href=\"./$(basename ${d})/\">$(basename ${d})</a>" >> public/${platform}/index.html
   done
 
-  # End the page
-  echo "  </body>" >> public/$(basename ${d})/index.html
-  echo "</html>" >> public/$(basename ${d})/index.html
+  # Add record for platform
+  echo "    <a href=\"./$(basename ${platform})/\">$(basename ${platform})</a>" >> public/index.html
 
-  echo "    <a href=\"./$(basename ${d})/\">$(basename ${d})</a>" >> public/index.html
+  # End the page
+  echo "  </body>" >> public/${platform}/index.html
+  echo "</html>" >> public/${platform}/index.html
 done
 
 # End the page

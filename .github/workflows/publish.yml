@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/configure-pages@v2
-      - run: ./tools/wheel-index alpine-3.15
+      - run: ./tools/wheel-index
       - uses: actions/upload-pages-artifact@v1
         with:
           path: './public'
