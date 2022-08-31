@@ -2,30 +2,36 @@
 
 WHEELS_DIR=$1
 
+# Create folder
+mkdir -p public
+
 # Headers
-echo "<!DOCTYPE html>" > ${WHEELS_DIR}/index.html
-echo "<html>" >> ${WHEELS_DIR}/index.html
-echo "  <body>" >> ${WHEELS_DIR}/index.html
+echo "<!DOCTYPE html>" > public/index.html
+echo "<html>" >> public/index.html
+echo "  <body>" >> public/index.html
 
 # Loop over all the packages
 for d in $(find ${WHEELS_DIR} -type d -mindepth 1 -maxdepth 1); do
+  # Generate folder for package
+  mkdir -p public/$(basename ${d})
+
   # Generate index for the package
-  echo "<!DOCTYPE html>" > ${d}/index.html
-  echo "<html>" >> ${d}/index.html
-  echo "  <body>" >> ${d}/index.html
+  echo "<!DOCTYPE html>" > public/$(basename ${d})/index.html
+  echo "<html>" >> public/$(basename ${d})/index.html
+  echo "  <body>" >> public/$(basename ${d})/index.html
 
   # Loop over all the wheels
   for w in $(find ${d} -type f -name "*.whl"); do
-    echo "    <a href=\"./$(basename ${w})\">$(basename ${w})</a>" >> ${d}/index.html
+    echo "    <a href=\"https://github.com/vexxhost/wheels/raw/main/${WHEELS_DIR}/$(basename ${d})/$(basename ${w})\">$(basename ${w})</a>" >> public/$(basename ${d})/index.html
   done
 
   # End the page
-  echo "  </body>" >> ${d}/index.html
-  echo "</html>" >> ${d}/index.html
+  echo "  </body>" >> public/$(basename ${d})/index.html
+  echo "</html>" >> public/$(basename ${d})/index.html
 
-  echo "    <a href=\"./$(basename ${d})/\">$(basename ${d})</a>" >> ${WHEELS_DIR}/index.html
+  echo "    <a href=\"./$(basename ${d})/\">$(basename ${d})</a>" >> public/index.html
 done
 
 # End the page
-echo "  </body>" >> ${WHEELS_DIR}/index.html
-echo "</html>" >> ${WHEELS_DIR}/index.html
+echo "  </body>" >> public/index.html
+echo "</html>" >> public/index.html
