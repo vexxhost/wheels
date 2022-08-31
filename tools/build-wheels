@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# NOTE(mnaser): This is not meant to be run directly, this is meant to run
+#               inside of the Docker container.
+
+echo "Installing build dependencies..."
+
+if [ -e /etc/alpine-release ]; then
+  echo "Detected Alpine Linux."
+
+  WHEELS_DIR=/build/alpine-$(cat /etc/alpine-release | cut -d'.' -f1,2)
+
+  apk add \
+    gcc \
+    linux-headers \
+    musl-dev
+else
+  echo "Unable to detect the Linux distribution."
+  exit 1
+fi
+
+pip wheel -r /build/requirements.txt -w ${WHEELS_DIR}
